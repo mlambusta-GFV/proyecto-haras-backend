@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @media print{
+            @page {
+                size: auto;
+            }
+            body{
+                padding: 10px;
+                width: 100%;
+                margin: 0;
+                box-sizing: border-box;
+                padding: 17px;
+            }
+        }
+        body{
+            max-width: 210mm;
+        }
+        .horseInfo{
+            box-sizing: border-box;
+            display: block;
+            padding: 15px;
+            width: 100%;
+            height: 150px;
+            background-color: white;
+            border: 2px #00271C solid;
+            border-radius: 25px;
+        }
+        .horseInfo img{
+            width: 120px;
+            height: 120px;
+            float: left;
+            margin: auto 20px auto 0;
+            border-radius: 50%;
+        }
+        .horseInfo .content{
+            float: left;
+            margin: auto 0;
+        }
+        .horseInfo h2{
+            color: #00271D;
+            text-transform: uppercase;
+            font-size: 14px;
+            margin: 0 0 5px 0;
+        }
+        .horseInfo .content div{
+            color: black;
+            font-size: 11px;
+        }
+        .tables{
+            border: 2px solid;
+            border-radius: 25px;
+            overflow: hidden;
+            font-size: 11px;
+            margin: 15px 0;
+        }
+        .tables section header{
+            background-color: #00271C;
+            color: white;
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+        .tables section .info{
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px 15px; 
+        }
+        .tables section .info .item{
+            width: 50%;
+        }
+        .tables section table{
+            width: 100%;
+            padding: 0 15px 15px 15px; 
+        }
+        .tables section table th{
+            color: white;
+            background-color: #00271C;
+        }
+        .tables table{
+            border-spacing: 1px;
+            text-align: left;
+        }
+        .tables tbody tr:nth-child(even){
+            background-color: #e2efd9;
+        }
+    </style>
+</head>
+<body>
+    <div class="horseInfo">
+        <img src="./horse.png"/>
+        <div class="content">
+            <h2>Abalair (rr)</h2>
+            <div><span>Nacimiento: </span>18/9/2021</div>
+            <div><span>Edad: </span>1</div>
+            <div><span>Sexo: </span>yegua</div>
+            <div><span>Pelaje: </span>Zaino</div>
+            <div><span>Padre: </span>Balou du Rouet</div>
+            <div><span>Madre: </span>Nantair (RR)</div>
+        </div>
+    </div>
+    <div class="tables">
+        <section>
+            <header><strong>Cita: </strong>Desvasado<span style="float: right;">01/01/2022</span></header>
+            <div class="info">
+                <div class="item"><strong>Profesional: </strong>Federico Oyuela</div>
+                <div class="item"><strong>Asistente: </strong>Marina Urbina</div>
+                <div class="item"><strong>Descripción: </strong>Correcto.</div>
+            </div>
+        </section>
+        <section>
+            <header><strong>Diagnósticos Y Tratamientos</strong></header>
+            <div class="info">
+                <div class="item"><strong>Anámnesis: </strong>describir anámnesis</div>
+                <div class="item"><strong>Observación: </strong>describir observación</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tratamiento</th>
+                        <th>Descripción</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tratamiento</td>
+                        <td>Descripción</td>
+                        <td>Inicio</td>
+                        <td>Fin</td>
+                    </tr>
+                    <tr>
+                        <td>Tratamiento</td>
+                        <td>Descripción</td>
+                        <td>Inicio</td>
+                        <td>Fin</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <header><strong>Intervenciones</strong></header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vacunación</td>
+                        <td>Vacuna anti algo</td>
+                    </tr>
+                    <tr>
+                        <td>Vacunación</td>
+                        <td>Vacuna anti algo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+    <div class="tables">
+        <section>
+            <header><strong>Cita: </strong>Desvasado</header>
+            <div class="info">
+                <div class="item"><strong>Profesional: </strong>Federico Oyuela</div>
+                <div class="item"><strong>Asistente: </strong>Marina Urbina</div>
+                <div class="item"><strong>Descripción: </strong>Correcto.</div>
+            </div>
+        </section>
+        <section>
+            <header><strong>Diagnósticos Y Tratamientos</strong></header>
+            <div class="info">
+                <div class="item"><strong>Anámnesis: </strong>describir anámnesis</div>
+                <div class="item"><strong>Observación: </strong>describir observación</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tratamiento</th>
+                        <th>Descripción</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tratamiento</td>
+                        <td>Descripción</td>
+                        <td>Inicio</td>
+                        <td>Fin</td>
+                    </tr>
+                    <tr>
+                        <td>Tratamiento</td>
+                        <td>Descripción</td>
+                        <td>Inicio</td>
+                        <td>Fin</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <header><strong>Intervenciones</strong></header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vacunación</td>
+                        <td>Vacuna anti algo</td>
+                    </tr>
+                    <tr>
+                        <td>Vacunación</td>
+                        <td>Vacuna anti algo</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</body>
+</html>
