@@ -5,6 +5,7 @@ import fileUpload from "express-fileupload";
 import cors from "cors"
 import logger from "../logger"
 import { connectDatabase } from "./database";
+import { Interventions } from "./ClinicHistory/Interventions";
 
 
 
@@ -16,17 +17,17 @@ const startServer = async () => {
             const connection = await connectDatabase();
             logger.info("Database connection established");
             
-            logger.info("Start Server");
+            logger.info("Starting Express Server");
             await system.start();
 
             //logger.info("Running migrations..");
             //connection.runMigrations();
             
-            //const data = await initializeData();            
+            //await initializeData();            
 
             const server = express();
 
-            //options for cors midddleware
+            //options for cors middleware
             const options: cors.CorsOptions = {
                 allowedHeaders: [
                     "Origin",
@@ -59,47 +60,32 @@ const startServer = async () => {
 
 async function initializeData() {
     try {
-        logger.info("Comenzando transacción para carga inicial de datos...");
+        logger.info("Starting transaction for initial data load...");
         const locations = system.locations();
         const horses = system.horses();
         const peoples = system.peoples();
         const valuesList = system.valuesLists();
 
         const sexes = [
-            { key: "M", value: "mare", order: 1, filter: true, description: "" },
-            { key: "S", value: "stallion", order: 1, filter: true, description: "" },
-            { key: "C", value: "castrated", order: 3, filter: true, description: "" },
-            { key: "A", value: "A Definir", order: 4, filter: true, description: "sexo a definir" }
+            { key: "M", value: "mare", order: 1, filter: true, description: "Female horse" },
+            { key: "S", value: "stallion", order: 1, filter: true, description: "Male breeding horse" },
+            { key: "C", value: "Gelding", order: 3, filter: true, description: "Gelding male horse" },
+            { key: "U", value: "Undefined", order: 4, filter: true, description: "To be determined" }
         ];
-
-        for (const sexData of sexes) {
-            await valuesList.addSex(sexData.key, sexData.value, sexData.order, sexData.filter, sexData.description);
-            logger.info(`Agregado Sexo: ${sexData.key}`);
-        }
 
         const furs = [
-            { key: "ALAZÁN", value: "Alazán", order: 1, filter: true, description: "" },
-            { key: "ZAINO", value: "Zaino", order: 2, filter: true, description: "" },
-            { key: "TORDILLO", value: "Tordillo", order: 3, filter: true, description: "" },
-            { key: "FA", value: "A definir", order: 4, filter: true, description: "Pelaje a Definir" },
+            { key: "CHESTNUT", value: "Chestnut", order: 1, filter: true, description: "" },
+            { key: "BAY", value: "Bay", order: 2, filter: true, description: "" },
+            { key: "GRAY", value: "Gray", order: 3, filter: true, description: "" },
+            { key: "UNDEFINED", value: "Undefined", order: 4, filter: true, description: "To be determined" },
         ];
 
-        for (const furData of furs) {
-            await valuesList.addFur(furData.key, furData.value, furData.order, furData.filter, furData.description);
-            logger.info(`Agregado Pelaje: ${furData.key}`);
-        }
-
         const postTypes = [
-            { key: "P", value: "published", order: 1, filter: false, description: "published post"},
-            { key: "D", value: "draft", order: 2, filter: false, description: "drafted post"},
-            { key: "N", value: "news", order: 3, filter: false, description: "news type"},
-            { key: "E", value: "event", order: 4, filter: true, description: "event type"},
+            { key: "P", value: "Published", order: 1, filter: false, description: "published post"},
+            { key: "D", value: "Draft", order: 2, filter: false, description: "Draft post"},
+            { key: "N", value: "News", order: 3, filter: false, description: "News type"},
+            { key: "E", value: "Event", order: 4, filter: true, description: "Event type"},
         ]
-
-        for (const postTypesData of postTypes) {
-            await valuesList.addPostType(postTypesData.key, postTypesData.value, postTypesData.order, postTypesData.filter, postTypesData.description);
-            logger.info(`Agregado postType: ${postTypesData.key}`);
-        }
 
         const fileTypes = [
             { key: "PHOTO", value: "png,jpg,jpeg,webp", order: 1, filter: false, description: "PHOTO"},
@@ -108,84 +94,71 @@ async function initializeData() {
             { key: "UNKNOW", value: "unknown", order: 4, filter: false, description: "''"},
         ]
 
-        for (const fileTypesData of fileTypes) {
-            await valuesList.addFileType(fileTypesData.key, fileTypesData.value, fileTypesData.order, fileTypesData.filter, fileTypesData.description);
-            logger.info(`Agregado fileType: ${fileTypesData.key}`);
-        }
-
         const taskTypes = [
-            {key: "G", value: "General", order: 1, filter: false, description: "General"},
-            {key: "COM", value: "Competition", order: 2, filter: false, description: "Competition"},
-            {key: "ED", value: "Education", order: 3, filter: false, description: "Education"},
-            {key: "H", value: "chape", order: 4, filter: false, description: "chape"},
-            {key: "V", value: "Vaccination", order: 5, filter: false, description: "Vaccination"},
-            {key: "DE", value: "deworming", order: 6, filter: false, description: "deworming"},
-            {key: "R", value: "review", order: 7, filter: false, description: "review"},
-            {key: "REP", value: "reproduction", order: 8, filter: false, description: "reproduction"},
+            {key: "GRAL", value: "General", order: 1, filter: false, description: "General task"},
+            {key: "COMP", value: "Competition", order: 2, filter: false, description: "Competition-related task"},
+            {key: "TRAIN", value: "Training", order: 3, filter: false, description: "Training and Education"},
+            {key: "HOOF_CARE", value: "Hoof care", order: 4, filter: false, description: "Hoof trimming and maintenance"},
+            {key: "VACC", value: "Vaccination", order: 5, filter: false, description: "Immunization schedule"},
+            {key: "DEWORM", value: "Deworming", order: 6, filter: false, description: "Parasite control treatment"},
+            {key: "REVIEW", value: "Review", order: 7, filter: false, description: "Routine health examination"},
+            {key: "BREEDING", value: "Breeding", order: 8, filter: false, description: "Reproduction and breeding management"},
         ]
-
-        for (const taskTypesData of taskTypes) {
-            await valuesList.addTasksType(taskTypesData.key, taskTypesData.value, taskTypesData.order, taskTypesData.filter, taskTypesData.description);
-            logger.info(`Agregado taskType: ${taskTypesData.key}`);
-        }
-        
-        const clasifications = [
-            {key: "0", value: "Estado Inicial", order: 1, filter: true, description: "Estado inicial"},
-            {key: "1", value: "Yeguas Apto servicio", order: 2, filter: true, description: "Yeguas Apto servicio"},
-            {key: "2", value: "Yegua Donante", order: 3, filter: true, description: "Yegua Donante"},
-            {key: "3", value: "Yegua Madre", order: 4, filter: true, description: "Yegua Madre"},
-            {key: "4", value: "Yegua A Transferir", order: 5, filter: true, description: "Yegua A Transferir"},
-            {key: "5", value: "Yegua Preñada", order: 6, filter: true, description: "Yegua Preñada"},
-            {key: "6", value: "Yegua con Potrillo al Pie", order: 7, filter: true, description: "Yegua con Potrillo al Pie"},
-            {key: "7", value: "Proceso de doma", order: 8, filter: true, description: "Proceso de doma"},
-            {key: "8", value: "Padrillo Pajuelas", order: 9, filter: true, description: "Apto Servicio Pajuela"},
-            {key: "9", value: "Padrillo Servicio Natural", order: 10, filter: true, description: "Apto Servicio Natural"},
-            {key: "10", value: "Yegua inseminada", order: 11, filter: true, description: "Yegua inseminada"},
-            {key: "11", value: "Yegua Transferida", order: 12, filter: true, description: "Yegua Transferida"},
-            {key: "12", value: "Training", order: 13, filter: true, description: "Training"},
-            {key: "13", value: "Jubilado", order: 14, filter: true, description: "Jubilado"},
-            {key: "14", value: "Training Descanso", order: 15, filter: true, description: "Training Descanso"},
-            {key: "15", value: "Vendido", order: 16, filter: true, description: "Vendido"},
-            {key: "16", value: "Yegua Receptora", order: 17, filter: true, description: "Yegua Receptora"},
-            {key: "17", value: "Fallecido", order: 18, filter: true, description: "Fallecido"},
-            {key: "18", value: "Trabajo", order: 19, filter: true, description: "Trabajo"},
+       
+        const classifications = [
+            {key: "0", value: "Initial State", order: 1, filter: true, description: "Initial State"},
+            {key: "1", value: "Mares Ready for Service", order: 2, filter: true, description: "Mares ready for breeding service"},
+            {key: "2", value: "Donor Mare", order: 3, filter: true, description: "Mare used for embryo donation"},
+            {key: "3", value: "Broodmare", order: 4, filter: true, description: "Mare designated for breeding"},
+            {key: "4", value: "Mare for Transfer", order: 5, filter: true, description: "Mare pending ownership transfer"},
+            {key: "5", value: "Pregnant Mare", order: 6, filter: true, description: "Mare confirmed pregnant"},
+            {key: "6", value: "Mare whit Foal at Side", order: 7, filter: true, description: "Mare nursing a foal"},
+            {key: "7", value: "Starting Process", order: 8, filter: true, description: "Horse undergoing initial training"},
+            {key: "8", value: "Stallion for Semen Collection", order: 9, filter: true, description: "Stallion used for artificial insemination"},
+            {key: "9", value: "Stallion for Natural Service", order: 10, filter: true, description: "Stallion used for live cover breeding"},
+            {key: "10", value: "Inseminated Mare", order: 11, filter: true, description: "Mare that has been artificially inseminated"},
+            {key: "11", value: "Transferred Mare", order: 12, filter: true, description: "Mare transferred to a new location/owner"},
+            {key: "12", value: "Training", order: 13, filter: true, description: "Horse actively in training"},
+            {key: "13", value: "Retired", order: 14, filter: true, description: "Horse retired from activity"},
+            {key: "14", value: "Training Break", order: 15, filter: true, description: "Horse temporarily on rest from training"},
+            {key: "15", value: "Sold", order: 16, filter: true, description: "Horse sold and no longer in the program"},
+            {key: "16", value: "Recipient Mare", order: 17, filter: true, description: "Mare used to carry an embryo"},
+            {key: "17", value: "Deceased", order: 18, filter: true, description: "Horse has passed away"},
+            {key: "18", value: "Work Horse", order: 19, filter: true, description: "Horse used for labor or utility purposes"},
         ]
-
-        for (const clasificationsData of clasifications) {
-            await valuesList.addClasificationName(clasificationsData.key, clasificationsData.value, clasificationsData.order, clasificationsData.filter, clasificationsData.description);
-            logger.info(`Agregado taskType: ${clasificationsData.key}`);
-        }
 
         const interventionTypes = [
-            {key: "R", value: "radiography", order: 1, filter: false, description: "radiography"},
-            {key: "V", value: "vaccination", order: 2, filter: false, description: "vaccination"},
-            {key: "S", value: "surgical", order: 3, filter: false, description: "surgical"},
-            //{key: "DE", value: "deworming", order: 4, filter: false, description: "deworming"},
-            {key: "H", value: "chape", order: 5, filter: false, description: "chape"},
-            {key: "AS", value: "Resultados de Laboratorio", order: 6, filter: false, description: "Resultado de Laboratorio"},
-            {key: "F", value: "fibroscopy", order: 7, filter: false, description: "fibroscopy"},
-            {key: "O", value: "odontology", order: 8, filter: false, description: "Odontología"},
-            {key: "E", value: "ultrasound", order: 9, filter: false, description: "Ecografía"},
-            {key: "I", value: "infiltration", order: 10, filter: false, description: "Infiltración"},
-            {key: "PP", value: "radiography", order: 11, filter: false, description: "Radiography"},
-            {key: "R", value: "platelet rich plasma", order: 12, filter: false, description: "Plasma rico en plaquetas"},
-            {key: "OS", value: "Osteopatía", order: 13, filter: false, description: "Osteopatía"},
-            {key: "Q", value: "Quiropraxia", order: 14, filter: false, description: "Quiropraxia"},
-            {key: "RG", value: "Revisión General", order: 15, filter: false, description: "Revisión General"},
+            {key: "XRAY", value: "Radiography", order: 1, filter: false, description: "X-ray imaging for diagnosis"},
+            {key: "VACC", value: "Vaccination", order: 2, filter: false, description: "Immunization and disease prevention"},
+            {key: "SURG", value: "Surgical Procedure", order: 3, filter: false, description: "Surgical intervention"},
+            {key: "HOOF", value: "Hoof Care", order: 5, filter: false, description: "Hoof trimming and maintenance"},
+            {key: "LAB_RESULTS", value: "Labotary Results", order: 6, filter: false, description: "Analysis of blood, urine, or tissue samples"},
+            {key: "FIBROSCOPY", value: "Fibroscopy", order: 7, filter: false, description: "Internal examination with an fibroscope"},
+            {key: "DENTAL", value: "Dental Care", order: 8, filter: false, description: "Odontological treatment and maintenance"},
+            {key: "ULTRASOUND", value: "Ultrasound", order: 9, filter: false, description: "Ultrasound imaging for medical assessment"},
+            {key: "INFILTRATION", value: "Infiltration Therapy", order: 10, filter: false, description: "Injection-based treatment"},
+            {key: "PRP", value: "Platelet-Rich Plasma", order: 12, filter: false, description: "Regenerative therapy using plasma"},
+            {key: "OSTEO", value: "Osteopathy", order: 13, filter: false, description: "Manual therapy for musculoskeletal health"},
+            {key: "CHIROPRACTIC", value: "Chiropractic", order: 14, filter: false, description: "Spinal and joint realignment therapy"},
+            {key: "GEN_REVIEW", value: "General Check-Up", order: 15, filter: false, description: "Routine health examination"},
         ]
 
-        for (const interventionTypesData of interventionTypes) {
-            await valuesList.addInterventionType(interventionTypesData.key, interventionTypesData.value, interventionTypesData.order, interventionTypesData.filter, interventionTypesData.description);
-            logger.info(`Agregado interventionTypes: ${interventionTypesData.key}`);
-        }
-
+        await Promise.all([
+            sexes.map(sex => valuesList.addSex(sex.key, sex.value, sex.order, sex.filter, sex.description)),
+            furs.map(fur => valuesList.addFur(fur.key, fur.value, fur.order, fur.filter, fur.description)),
+            postTypes.map(postTypes => valuesList.addPostType(postTypes.key, postTypes.value, postTypes.order, postTypes.filter, postTypes.description)),
+            fileTypes.map(filesTypes => valuesList.addFileType(filesTypes.key, filesTypes.value, filesTypes.order, filesTypes.filter, filesTypes.description)),
+            taskTypes.map(taskTypes => valuesList.addTasksType(taskTypes.key, taskTypes.value, taskTypes.order, taskTypes.filter, taskTypes.description)),
+            classifications.map(classifications => valuesList.addClasificationName(classifications.key, classifications.value, classifications.order, classifications.filter, classifications.description)),
+            interventionTypes.map(interventionsTypes => valuesList.addInterventionType(interventionsTypes.key, interventionsTypes.value, interventionsTypes.order, interventionsTypes.filter, interventionsTypes.description))
+        ]);
         await peoples.addPeople("Juan", "Zabala", "11111111", 1, "jzabala@grupo.com");
-        await peoples.addVeterinarian("Bernardo", "Nacional", "11111112", "1002", 2, "bnacional@grupo.com");
+        await peoples.addVeterinarian("Bernardo", "Espina", "11111112", "1002", 2, "bspina@grupo.com");
     
         await system.commitTransaction();
-        logger.info("Datos iniciales cargados exitosamente.");
+        logger.info("Initial data succesfully loaded");
     } catch (error) {
-        logger.error("Error en la carga de datos iniciales:", error);
+        logger.error("Error loading initial data:", error);
         await system.rollbackTransaction();
     }
 }
